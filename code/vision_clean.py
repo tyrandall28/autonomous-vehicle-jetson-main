@@ -68,7 +68,7 @@ class SimplifiedVisionSystem:
     def __init__(self, model_path="yolov5n_fp16.engine", confidence_threshold=0.5):
         """Initialize simplified vision system"""
         self.confidence_threshold = confidence_threshold
-        self.nms_threshold = 0.4
+        self.nms_threshold = 0.6  # More aggressive NMS to reduce duplicates
         self.input_size = (640, 640)
         
         # Load model
@@ -201,6 +201,12 @@ class SimplifiedVisionSystem:
                     filtered_count += 1
                     continue
                 
+                # Additional filter: only keep higher confidence detections to reduce noise
+                min_confidence = max(self.confidence_threshold, 0.4)  # At least 0.4 confidence
+                if confidence < min_confidence:
+                    filtered_count += 1
+                    continue
+                
                 # Get class name
                 if class_id >= len(self.class_names):
                     continue
@@ -228,7 +234,14 @@ class SimplifiedVisionSystem:
             indices = cv2.dnn.NMSBoxes(boxes, confidences, self.confidence_threshold, self.nms_threshold)
             
             if len(indices) > 0:
-                for i in indices.flatten():
+                # Sort by confidence and limit to top detections for performance
+                sorted_indices = sorted(indices.flatten(), key=lambda i: confidences[i], reverse=True)
+                max_detections = 20  # Limit to 20 best detections
+                
+                for idx, i in enumerate(sorted_indices):
+                    if idx >= max_detections:  # Stop after max detections
+                        break
+                        
                     x, y, w, h = boxes[i]
                     class_name = self.class_names[class_ids[i]]
                     confidence = confidences[i]
@@ -246,7 +259,8 @@ class SimplifiedVisionSystem:
         
         # Print performance summary instead of spam
         if raw_count > 0:
-            print(f"Processed: {raw_count} raw → {raw_count-filtered_count} passed confidence → {len(detections)} final")
+            pre_nms = len(boxes)
+            print(f"Processed: {raw_count} raw → {raw_count-filtered_count} passed confidence → {pre_nms} pre-NMS → {len(detections)} final")
         
         return detections
     
