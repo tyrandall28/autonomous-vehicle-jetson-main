@@ -235,7 +235,7 @@ class SimplifiedVisionSystem:
                         'center': (x + w//2, y + h//2)
                     })
                     
-                    print(f"Final detection: {class_name} ({confidence:.3f}) at ({x},{y},{w},{h})")
+                    print(f"Final detection: {class_name} ({confidence:.3f}) at ({x},{y},{w},{h}) - frame_size:{frame_shape}")
         
         return detections
     
@@ -267,7 +267,8 @@ class SimplifiedVisionSystem:
         frame_count = 0
         fps_counter = 0
         fps_start_time = time.time()
-        process_every_n_frames = 2  # Process every 2nd frame
+        process_every_n_frames = 5  # Process every 5th frame for better performance
+        last_detections = []  # Keep last detections for smoother display
         
         while True:
             ret, frame = self.cap.read()
@@ -278,28 +279,33 @@ class SimplifiedVisionSystem:
             frame_count += 1
             fps_counter += 1
             
+            # Print frame info for debugging
+            if frame_count % 10 == 0:
+                print(f"Frame {frame_count}: {frame.shape} - Processing: {'YES' if frame_count % process_every_n_frames == 0 else 'NO'}")
+            
             # Process detection every N frames
             if frame_count % process_every_n_frames == 0:
                 detection_start = time.time()
                 detections = self.detect_objects(frame)
                 detection_time = time.time() - detection_start
+                last_detections = detections  # Store for next frames
                 
-                if frame_count % 60 == 0:  # Print timing every 60 frames
-                    print(f"Detection time: {detection_time*1000:.1f}ms, Found: {len(detections)} objects")
+                print(f"Detection time: {detection_time*1000:.1f}ms, Found: {len(detections)} objects")
             else:
-                detections = []
+                detections = last_detections  # Use previous detections for smooth display
             
             # Draw results
             frame = self.draw_detections(frame, detections)
             
-            # Add status
+            # Add status with more info
             cv2.putText(frame, f"Frame: {frame_count}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+            cv2.putText(frame, f"Shape: {frame.shape}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             
             if detections:
-                cv2.putText(frame, "OBJECTS DETECTED", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                cv2.putText(frame, f"OBJECTS: {len(detections)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
             
-            # Calculate FPS
-            if fps_counter >= 30:
+            # Calculate FPS more frequently for slow framerates
+            if fps_counter >= 10:  # Print every 10 frames instead of 30
                 fps = fps_counter / (time.time() - fps_start_time)
                 fps_counter = 0
                 fps_start_time = time.time()
