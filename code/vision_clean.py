@@ -175,7 +175,10 @@ class SimplifiedVisionSystem:
         confidences = []
         class_ids = []
         
-        # Process outputs (simplified)
+        # Process outputs (simplified with early filtering)
+        raw_count = 0
+        filtered_count = 0
+        
         for output in outputs:
             # Handle TensorRT output format
             if output.ndim == 1:
@@ -184,6 +187,7 @@ class SimplifiedVisionSystem:
                 output = output[0]  # Remove batch dimension
             
             for detection in output:
+                raw_count += 1
                 if len(detection) < 85:
                     continue
                     
@@ -192,8 +196,9 @@ class SimplifiedVisionSystem:
                 class_id = np.argmax(scores)
                 confidence = scores[class_id]
                 
-                # Filter by confidence
+                # Early exit for very low confidence (performance optimization)
                 if confidence <= self.confidence_threshold:
+                    filtered_count += 1
                     continue
                 
                 # Get class name
@@ -205,11 +210,11 @@ class SimplifiedVisionSystem:
                 if class_name not in self.target_objects:
                     continue
                 
-                # Get bounding box (YOLO format: center_x, center_y, width, height)
-                center_x = int(detection[0] * width)
-                center_y = int(detection[1] * height)
-                w = int(detection[2] * width)
-                h = int(detection[3] * height)
+                # Get bounding box (TensorRT outputs pixel coordinates directly)
+                center_x = int(detection[0])
+                center_y = int(detection[1])
+                w = int(detection[2])
+                h = int(detection[3])
                 
                 x = int(center_x - w / 2)
                 y = int(center_y - h / 2)
@@ -235,7 +240,13 @@ class SimplifiedVisionSystem:
                         'center': (x + w//2, y + h//2)
                     })
                     
-                    print(f"Final detection: {class_name} ({confidence:.3f}) at ({x},{y},{w},{h}) - frame_size:{frame_shape}")
+                    # Only print occasional debug info to reduce spam
+                    if len(detections) <= 3:  # Only print first few detections
+                        print(f"Final detection: {class_name} ({confidence:.3f}) at ({x},{y},{w},{h})")
+        
+        # Print performance summary instead of spam
+        if raw_count > 0:
+            print(f"Processed: {raw_count} raw → {raw_count-filtered_count} passed confidence → {len(detections)} final")
         
         return detections
     
@@ -267,7 +278,7 @@ class SimplifiedVisionSystem:
         frame_count = 0
         fps_counter = 0
         fps_start_time = time.time()
-        process_every_n_frames = 5  # Process every 5th frame for better performance
+        process_every_n_frames = 10  # Process every 10th frame for better performance
         last_detections = []  # Keep last detections for smoother display
         
         while True:
