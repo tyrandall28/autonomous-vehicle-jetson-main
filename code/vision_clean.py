@@ -68,7 +68,7 @@ class SimplifiedVisionSystem:
     def __init__(self, model_path="yolov5n_fp16.engine", confidence_threshold=0.5):
         """Initialize simplified vision system"""
         self.confidence_threshold = confidence_threshold
-        self.nms_threshold = 0.6  # More aggressive NMS to reduce duplicates
+        self.nms_threshold = 0.8  # Very aggressive NMS to merge overlapping boxes
         self.input_size = (640, 640)
         
         # Load model
@@ -167,6 +167,50 @@ class SimplifiedVisionSystem:
         
         return self._process_detections(outputs, frame.shape[:2])
     
+    def _custom_aggressive_nms(self, boxes, confidences, class_ids, iou_threshold=0.3):
+        """Custom aggressive NMS that merges boxes more aggressively than OpenCV"""
+        if len(boxes) == 0:
+            return []
+        
+        # Convert to numpy arrays
+        boxes = np.array(boxes)
+        confidences = np.array(confidences)
+        
+        # Sort by confidence (highest first)
+        sorted_indices = np.argsort(confidences)[::-1]
+        
+        keep = []
+        while len(sorted_indices) > 0:
+            # Take the box with highest confidence
+            current = sorted_indices[0]
+            keep.append(current)
+            
+            if len(sorted_indices) == 1:
+                break
+                
+            # Calculate IoU with remaining boxes
+            current_box = boxes[current]
+            remaining_boxes = boxes[sorted_indices[1:]]
+            
+            # Calculate intersection over union
+            x1 = np.maximum(current_box[0], remaining_boxes[:, 0])
+            y1 = np.maximum(current_box[1], remaining_boxes[:, 1])
+            x2 = np.minimum(current_box[0] + current_box[2], remaining_boxes[:, 0] + remaining_boxes[:, 2])
+            y2 = np.minimum(current_box[1] + current_box[3], remaining_boxes[:, 1] + remaining_boxes[:, 3])
+            
+            intersection = np.maximum(0, x2 - x1) * np.maximum(0, y2 - y1)
+            
+            current_area = current_box[2] * current_box[3]
+            remaining_areas = remaining_boxes[:, 2] * remaining_boxes[:, 3]
+            
+            iou = intersection / (current_area + remaining_areas - intersection)
+            
+            # Keep only boxes with IoU below threshold
+            mask = iou <= iou_threshold
+            sorted_indices = sorted_indices[1:][mask]
+        
+        return keep
+    
     def _process_detections(self, outputs, frame_shape):
         """Simplified detection processing"""
         height, width = frame_shape
@@ -225,20 +269,35 @@ class SimplifiedVisionSystem:
                 x = int(center_x - w / 2)
                 y = int(center_y - h / 2)
                 
+                # Filter out tiny boxes (likely noise/artifacts)
+                min_box_size = 8  # Minimum 8x8 pixel box
+                if w < min_box_size or h < min_box_size:
+                    filtered_count += 1
+                    continue
+                
+                # Filter out boxes that are too big (likely false detections)
+                if w > 320 or h > 320:  # Max half the frame size
+                    filtered_count += 1
+                    continue
+                
                 boxes.append([x, y, w, h])
                 confidences.append(float(confidence))
                 class_ids.append(class_id)
         
         # Apply NMS
         if boxes:
-            indices = cv2.dnn.NMSBoxes(boxes, confidences, self.confidence_threshold, self.nms_threshold)
+            # Debug NMS input
+            if len(boxes) > 100:  # Only print when we have lots of boxes
+                print(f"NMS Input: {len(boxes)} boxes, conf_thresh={self.confidence_threshold}, nms_thresh={self.nms_threshold}")
             
-            if len(indices) > 0:
-                # Sort by confidence and limit to top detections for performance
-                sorted_indices = sorted(indices.flatten(), key=lambda i: confidences[i], reverse=True)
-                max_detections = 20  # Limit to 20 best detections
+            # Use custom aggressive NMS instead of OpenCV
+            kept_indices = self._custom_aggressive_nms(boxes, confidences, class_ids, iou_threshold=0.3)
+            
+            if len(kept_indices) > 0:
+                # Already sorted by confidence in custom NMS
+                max_detections = 8  # Even lower limit since we have better NMS now
                 
-                for idx, i in enumerate(sorted_indices):
+                for idx, i in enumerate(kept_indices):
                     if idx >= max_detections:  # Stop after max detections
                         break
                         
@@ -292,7 +351,7 @@ class SimplifiedVisionSystem:
         frame_count = 0
         fps_counter = 0
         fps_start_time = time.time()
-        process_every_n_frames = 10  # Process every 10th frame for better performance
+        process_every_n_frames = 15  # Process every 15th frame (reduce detection frequency for stability)
         last_detections = []  # Keep last detections for smoother display
         
         while True:
