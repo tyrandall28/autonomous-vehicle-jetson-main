@@ -146,8 +146,8 @@ class OptimizedVisionSystem:
             'toothbrush'
         ]
         
-        # Focus on important objects for autonomous driving (+ bottle for testing)
-        self.target_objects = ['person', 'bicycle', 'car', 'motorcycle', 'bus', 'truck', 'traffic light', 'stop sign', 'bottle']
+        # Focus on important objects for autonomous driving (+ common objects for testing)
+        self.target_objects = ['person', 'bicycle', 'car', 'motorcycle', 'bus', 'truck', 'traffic light', 'stop sign', 'bottle', 'cup', 'laptop', 'mouse', 'keyboard', 'cell phone', 'book', 'chair']
         
         # Initialize camera
         self.cap = None
@@ -265,6 +265,9 @@ class OptimizedVisionSystem:
         class_ids = []
         
         try:
+            detection_count = 0
+            filtered_count = 0
+            
             # Process only high-confidence detections early
             for i, output in enumerate(outputs):
                 # Handle different output formats
@@ -283,16 +286,24 @@ class OptimizedVisionSystem:
                         scores = detection[5:]
                         class_id = np.argmax(scores)
                         confidence = scores[class_id]
+                        detection_count += 1
                     else:
                         continue
-                
+                    
                     # Early exit for low confidence
                     if confidence <= self.confidence_threshold:
                         continue
                     
-                    # Only process important classes for autonomous driving
+                    # Check class name
                     class_name = self.class_names[class_id] if class_id < len(self.class_names) else "unknown"
+                    
+                    # Debug: Print high-confidence detections
+                    if confidence > 0.3:
+                        print(f"Detected: {class_name} ({confidence:.3f}) - {'yes' if class_name in self.target_objects else 'no'}")
+                    
+                    # Only process important classes for autonomous driving
                     if class_name not in self.target_objects:
+                        filtered_count += 1
                         continue
                     
                     # Get bounding box coordinates
@@ -324,6 +335,10 @@ class OptimizedVisionSystem:
                             'bbox': (x, y, w, h),
                             'center': (x + w//2, y + h//2)
                         })
+            
+            # Debug summary
+            if detection_count > 0:
+                print(f"Summary: {detection_count} raw detections, {filtered_count} filtered out, {len(detections)} final")
             
             return detections
             
