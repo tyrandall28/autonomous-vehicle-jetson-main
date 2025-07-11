@@ -1,0 +1,626 @@
+tyler@tyler-desktop:~/Desktop/autonomous-vehicle-jetson-main/code$ python3 vision_debug.py --model yolov5n_fp16.engine --confidence 0.7
+Loading TensorRT engine...
+Binding: images, Index: 0, Size: 1228800, Shape: (1, 3, 640, 640), DType: <class 'numpy.float16'>
+Binding: output0, Index: 1, Size: 2142000, Shape: (1, 25200, 85), DType: <class 'numpy.float16'>
+TensorRT engine loaded successfully!
+Initializing camera...
+GST_ARGUS: Creating output stream
+CONSUMER: Waiting until producer is connected...
+GST_ARGUS: Available Sensor modes :
+GST_ARGUS: 3264 x 2464 FR = 21.000000 fps Duration = 47619048 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 3264 x 1848 FR = 28.000001 fps Duration = 35714284 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 1920 x 1080 FR = 29.999999 fps Duration = 33333334 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 1640 x 1232 FR = 29.999999 fps Duration = 33333334 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 1280 x 720 FR = 59.999999 fps Duration = 16666667 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: 1280 x 720 FR = 120.000005 fps Duration = 8333333 ; Analog Gain range min 1.000000, max 10.625000; Exposure Range min 13000, max 683709000;
+
+GST_ARGUS: Running with following settings:
+   Camera index = 0 
+   Camera mode  = 5 
+   Output Stream W = 1280 H = 720 
+   seconds to Run    = 0 
+   Frame Rate = 120.000005 
+GST_ARGUS: Setup Complete, Starting captures for 0 seconds
+GST_ARGUS: Starting repeat capture requests.
+CONSUMER: Producer has connected; continuing.
+[ WARN:0@11.440] global cap_gstreamer.cpp:1728 open OpenCV | GStreamer warning: Cannot query video position: status=0, value=-1, duration=-1
+Camera initialized successfully
+Starting debug vision system...
+Confidence threshold: 0.7
+Press 'q' to quit
+
+=== FRAME 30 ===
+
+=== RAW OUTPUT DEBUG ===
+Frame shape: (640, 640)
+Number of outputs: 1
+Output 0: shape=(2142000,), dtype=float16
+Output 0: min=0.000, max=695.000
+Reshaped to: (25200, 85)
+  Detection 0: x=3.227, y=3.402, w=9.828, h=6.438, conf=0.000, max_class_conf=0.160
+  Detection 1: x=13.273, y=3.234, w=27.469, h=7.340, conf=0.000, max_class_conf=0.152
+  Detection 2: x=18.406, y=3.992, w=29.172, h=8.141, conf=0.000, max_class_conf=0.132
+  Detection 3: x=29.312, y=4.117, w=15.555, h=8.062, conf=0.000, max_class_conf=0.185
+  Detection 4: x=35.625, y=4.367, w=11.102, h=8.477, conf=0.000, max_class_conf=0.195
+========================
+
+Processing frame 640x640
+High conf detection: raw_coords=(148.000,4.711,26.953,9.547), conf=0.304
+High conf detection: raw_coords=(265.000,5.398,16.969,10.836), conf=0.323
+High conf detection: raw_coords=(267.750,6.273,23.984,11.641), conf=0.390
+Coordinate debug for person (conf=0.769):
+  Raw: (378.750,13.625,26.406,25.891)
+  Method 1 (norm*size): center=(242400,8720), size=(16900,16570)
+  Method 2 (direct): center=(378,13), size=(26,25)
+  Method 3 (scale/640): center=(378,13), size=(26,25)
+  Using Method 2 (direct)
+  Final bbox: (365,0,26,25)
+Coordinate debug for person (conf=0.717):
+  Raw: (280.000,27.703,25.406,38.656)
+  Method 1 (norm*size): center=(179200,17730), size=(16260,24740)
+  Method 2 (direct): center=(280,27), size=(25,38)
+  Method 3 (scale/640): center=(280,27), size=(25,38)
+  Using Method 2 (direct)
+  Final bbox: (267,8,25,38)
+Coordinate debug for person (conf=0.713):
+  Raw: (291.250,28.859,27.859,39.688)
+  Method 1 (norm*size): center=(186400,18470), size=(17830,25400)
+  Method 2 (direct): center=(291,28), size=(27,39)
+  Method 3 (scale/640): center=(291,28), size=(27,39)
+  Using Method 2 (direct)
+  Final bbox: (277,8,27,39)
+Coordinate debug for person (conf=0.790):
+  Raw: (397.250,29.281,32.156,42.844)
+  Method 1 (norm*size): center=(254240,18740), size=(20580,27420)
+  Method 2 (direct): center=(397,29), size=(32,42)
+  Method 3 (scale/640): center=(397,29), size=(32,42)
+  Using Method 2 (direct)
+  Final bbox: (381,8,32,42)
+Coordinate debug for person (conf=0.847):
+  Raw: (403.000,29.719,29.109,42.531)
+  Method 1 (norm*size): center=(257920,19020), size=(18630,27220)
+  Method 2 (direct): center=(403,29), size=(29,42)
+  Method 3 (scale/640): center=(403,29), size=(29,42)
+  Using Method 2 (direct)
+  Final bbox: (388,8,29,42)
+Summary: 291 total, 148 high confidence, 5 final
+Detection time: 1057.1ms
+Found 5 final detections
+
+=== FRAME 60 ===
+Processing frame 640x640
+High conf detection: raw_coords=(283.250,4.555,28.078,8.781), conf=0.318
+High conf detection: raw_coords=(292.250,4.703,28.547,8.789), conf=0.307
+High conf detection: raw_coords=(298.500,4.781,26.281,8.758), conf=0.326
+Coordinate debug for person (conf=0.717):
+  Raw: (403.000,29.344,30.859,44.469)
+  Method 1 (norm*size): center=(257920,18780), size=(19750,28460)
+  Method 2 (direct): center=(403,29), size=(30,44)
+  Method 3 (scale/640): center=(403,29), size=(30,44)
+  Using Method 2 (direct)
+  Final bbox: (388,7,30,44)
+Coordinate debug for person (conf=0.765):
+  Raw: (402.750,36.969,28.812,36.375)
+  Method 1 (norm*size): center=(257760,23660), size=(18440,23280)
+  Method 2 (direct): center=(402,36), size=(28,36)
+  Method 3 (scale/640): center=(402,36), size=(28,36)
+  Using Method 2 (direct)
+  Final bbox: (388,18,28,36)
+Coordinate debug for person (conf=0.729):
+  Raw: (410.500,35.500,22.297,42.031)
+  Method 1 (norm*size): center=(262720,22720), size=(14270,26900)
+  Method 2 (direct): center=(410,35), size=(22,42)
+  Method 3 (scale/640): center=(410,35), size=(22,42)
+  Using Method 2 (direct)
+  Final bbox: (399,14,22,42)
+Coordinate debug for person (conf=0.713):
+  Raw: (461.500,44.594,24.688,28.719)
+  Method 1 (norm*size): center=(295360,28540), size=(15800,18380)
+  Method 2 (direct): center=(461,44), size=(24,28)
+  Method 3 (scale/640): center=(461,44), size=(24,28)
+  Using Method 2 (direct)
+  Final bbox: (449,30,24,28)
+Coordinate debug for person (conf=0.772):
+  Raw: (467.000,44.375,20.156,21.891)
+  Method 1 (norm*size): center=(298880,28400), size=(12900,14010)
+  Method 2 (direct): center=(467,44), size=(20,21)
+  Method 3 (scale/640): center=(467,44), size=(20,21)
+  Using Method 2 (direct)
+  Final bbox: (457,33,20,21)
+Summary: 459 total, 188 high confidence, 5 final
+Detection time: 186.2ms
+Found 5 final detections
+
+=== FRAME 90 ===
+Processing frame 640x640
+High conf detection: raw_coords=(244.125,5.844,24.844,11.305), conf=0.311
+High conf detection: raw_coords=(253.125,5.125,16.562,9.773), conf=0.301
+High conf detection: raw_coords=(268.500,5.766,27.109,10.953), conf=0.380
+Coordinate debug for person (conf=0.708):
+  Raw: (416.000,28.906,15.383,43.312)
+  Method 1 (norm*size): center=(266240,18500), size=(9845,27720)
+  Method 2 (direct): center=(416,28), size=(15,43)
+  Method 3 (scale/640): center=(416,28), size=(15,43)
+  Using Method 2 (direct)
+  Final bbox: (408,6,15,43)
+Coordinate debug for person (conf=0.763):
+  Raw: (416.500,35.219,15.312,43.906)
+  Method 1 (norm*size): center=(266560,22540), size=(9800,28100)
+  Method 2 (direct): center=(416,35), size=(15,43)
+  Method 3 (scale/640): center=(416,35), size=(15,43)
+  Using Method 2 (direct)
+  Final bbox: (408,13,15,43)
+Coordinate debug for person (conf=0.732):
+  Raw: (418.000,42.469,15.578,40.156)
+  Method 1 (norm*size): center=(267520,27180), size=(9970,25700)
+  Method 2 (direct): center=(418,42), size=(15,40)
+  Method 3 (scale/640): center=(418,42), size=(15,40)
+  Using Method 2 (direct)
+  Final bbox: (410,22,15,40)
+Coordinate debug for person (conf=0.739):
+  Raw: (467.000,46.438,21.453,21.500)
+  Method 1 (norm*size): center=(298880,29720), size=(13730,13760)
+  Method 2 (direct): center=(467,46), size=(21,21)
+  Method 3 (scale/640): center=(467,46), size=(21,21)
+  Using Method 2 (direct)
+  Final bbox: (456,35,21,21)
+Coordinate debug for person (conf=0.831):
+  Raw: (461.250,52.188,25.438,34.125)
+  Method 1 (norm*size): center=(295200,33400), size=(16280,21840)
+  Method 2 (direct): center=(461,52), size=(25,34)
+  Method 3 (scale/640): center=(461,52), size=(25,34)
+  Using Method 2 (direct)
+  Final bbox: (448,35,25,34)
+Summary: 538 total, 231 high confidence, 5 final
+Detection time: 192.6ms
+Found 5 final detections
+
+=== FRAME 120 ===
+Processing frame 640x640
+High conf detection: raw_coords=(264.000,4.500,17.531,9.273), conf=0.340
+High conf detection: raw_coords=(269.250,5.547,27.922,10.609), conf=0.386
+High conf detection: raw_coords=(272.250,5.680,32.688,10.656), conf=0.405
+Coordinate debug for person (conf=0.705):
+  Raw: (415.500,20.938,15.406,40.656)
+  Method 1 (norm*size): center=(265920,13400), size=(9860,26020)
+  Method 2 (direct): center=(415,20), size=(15,40)
+  Method 3 (scale/640): center=(415,20), size=(15,40)
+  Using Method 2 (direct)
+  Final bbox: (407,0,15,40)
+Coordinate debug for person (conf=0.724):
+  Raw: (281.000,27.500,27.266,38.219)
+  Method 1 (norm*size): center=(179840,17600), size=(17450,24460)
+  Method 2 (direct): center=(281,27), size=(27,38)
+  Method 3 (scale/640): center=(281,27), size=(27,38)
+  Using Method 2 (direct)
+  Final bbox: (267,8,27,38)
+Coordinate debug for person (conf=0.706):
+  Raw: (403.250,35.969,28.047,42.375)
+  Method 1 (norm*size): center=(258080,23020), size=(17950,27120)
+  Method 2 (direct): center=(403,35), size=(28,42)
+  Method 3 (scale/640): center=(403,35), size=(28,42)
+  Using Method 2 (direct)
+  Final bbox: (389,14,28,42)
+Coordinate debug for person (conf=0.733):
+  Raw: (381.000,43.938,23.688,34.156)
+  Method 1 (norm*size): center=(243840,28120), size=(15160,21860)
+  Method 2 (direct): center=(381,43), size=(23,34)
+  Method 3 (scale/640): center=(381,43), size=(23,34)
+  Using Method 2 (direct)
+  Final bbox: (369,26,23,34)
+Coordinate debug for person (conf=0.796):
+  Raw: (462.000,45.250,24.172,25.922)
+  Method 1 (norm*size): center=(295680,28960), size=(15470,16590)
+  Method 2 (direct): center=(462,45), size=(24,25)
+  Method 3 (scale/640): center=(462,45), size=(24,25)
+  Using Method 2 (direct)
+  Final bbox: (450,32,24,25)
+Summary: 458 total, 211 high confidence, 5 final
+Detection time: 186.0ms
+Found 5 final detections
+
+=== FRAME 150 ===
+Processing frame 640x640
+High conf detection: raw_coords=(337.250,4.695,18.875,8.719), conf=0.322
+High conf detection: raw_coords=(348.500,3.926,28.406,7.484), conf=0.340
+High conf detection: raw_coords=(614.000,9.172,34.125,17.297), conf=0.320
+Coordinate debug for person (conf=0.764):
+  Raw: (546.500,105.562,23.500,24.203)
+  Method 1 (norm*size): center=(349760,67560), size=(15040,15490)
+  Method 2 (direct): center=(546,105), size=(23,24)
+  Method 3 (scale/640): center=(546,105), size=(23,24)
+  Using Method 2 (direct)
+  Final bbox: (534,93,23,24)
+Coordinate debug for person (conf=0.769):
+  Raw: (554.500,106.500,20.141,22.828)
+  Method 1 (norm*size): center=(354880,68160), size=(12890,14610)
+  Method 2 (direct): center=(554,106), size=(20,22)
+  Method 3 (scale/640): center=(554,106), size=(20,22)
+  Using Method 2 (direct)
+  Final bbox: (544,95,20,22)
+Coordinate debug for person (conf=0.703):
+  Raw: (563.500,108.125,22.562,22.828)
+  Method 1 (norm*size): center=(360640,69200), size=(14440,14610)
+  Method 2 (direct): center=(563,108), size=(22,22)
+  Method 3 (scale/640): center=(563,108), size=(22,22)
+  Using Method 2 (direct)
+  Final bbox: (552,97,22,22)
+Coordinate debug for person (conf=0.710):
+  Raw: (444.500,183.125,23.719,33.719)
+  Method 1 (norm*size): center=(284480,117200), size=(15180,21580)
+  Method 2 (direct): center=(444,183), size=(23,33)
+  Method 3 (scale/640): center=(444,183), size=(23,33)
+  Using Method 2 (direct)
+  Final bbox: (432,166,23,33)
+Coordinate debug for person (conf=0.808):
+  Raw: (454.250,181.625,24.328,31.812)
+  Method 1 (norm*size): center=(290720,116240), size=(15570,20360)
+  Method 2 (direct): center=(454,181), size=(24,31)
+  Method 3 (scale/640): center=(454,181), size=(24,31)
+  Using Method 2 (direct)
+  Final bbox: (442,165,24,31)
+Summary: 1817 total, 220 high confidence, 5 final
+Detection time: 263.1ms
+Found 5 final detections
+
+=== FRAME 180 ===
+Processing frame 640x640
+High conf detection: raw_coords=(226.625,2.898,21.719,6.328), conf=0.308
+High conf detection: raw_coords=(244.000,3.281,22.859,6.926), conf=0.316
+High conf detection: raw_coords=(443.000,2.605,23.531,6.039), conf=0.308
+Coordinate debug for person (conf=0.719):
+  Raw: (435.500,94.875,20.359,29.250)
+  Method 1 (norm*size): center=(278720,60720), size=(13030,18720)
+  Method 2 (direct): center=(435,94), size=(20,29)
+  Method 3 (scale/640): center=(435,94), size=(20,29)
+  Using Method 2 (direct)
+  Final bbox: (425,79,20,29)
+Coordinate debug for person (conf=0.764):
+  Raw: (395.000,101.500,26.562,37.062)
+  Method 1 (norm*size): center=(252800,64960), size=(17000,23720)
+  Method 2 (direct): center=(395,101), size=(26,37)
+  Method 3 (scale/640): center=(395,101), size=(26,37)
+  Using Method 2 (direct)
+  Final bbox: (382,82,26,37)
+Coordinate debug for person (conf=0.804):
+  Raw: (403.750,102.312,24.328,34.312)
+  Method 1 (norm*size): center=(258400,65480), size=(15570,21960)
+  Method 2 (direct): center=(403,102), size=(24,34)
+  Method 3 (scale/640): center=(403,102), size=(24,34)
+  Using Method 2 (direct)
+  Final bbox: (391,85,24,34)
+Coordinate debug for person (conf=0.845):
+  Raw: (412.750,103.062,24.469,34.000)
+  Method 1 (norm*size): center=(264160,65960), size=(15660,21760)
+  Method 2 (direct): center=(412,103), size=(24,34)
+  Method 3 (scale/640): center=(412,103), size=(24,34)
+  Using Method 2 (direct)
+  Final bbox: (400,86,24,34)
+Coordinate debug for person (conf=0.874):
+  Raw: (420.000,103.375,27.141,35.906)
+  Method 1 (norm*size): center=(268800,66160), size=(17370,22980)
+  Method 2 (direct): center=(420,103), size=(27,35)
+  Method 3 (scale/640): center=(420,103), size=(27,35)
+  Using Method 2 (direct)
+  Final bbox: (406,85,27,35)
+Summary: 1013 total, 293 high confidence, 5 final
+Detection time: 212.9ms
+Found 5 final detections
+
+=== FRAME 210 ===
+Processing frame 640x640
+High conf detection: raw_coords=(35.250,8.625,24.938,14.219), conf=0.303
+High conf detection: raw_coords=(45.406,8.508,25.875,14.250), conf=0.340
+High conf detection: raw_coords=(53.094,7.945,27.109,14.039), conf=0.390
+Coordinate debug for bottle (conf=0.740):
+  Raw: (348.500,131.750,27.328,28.750)
+  Method 1 (norm*size): center=(223040,84320), size=(17490,18400)
+  Method 2 (direct): center=(348,131), size=(27,28)
+  Method 3 (scale/640): center=(348,131), size=(27,28)
+  Using Method 2 (direct)
+  Final bbox: (334,117,27,28)
+Coordinate debug for bottle (conf=0.739):
+  Raw: (324.250,139.500,23.125,28.875)
+  Method 1 (norm*size): center=(207520,89280), size=(14800,18480)
+  Method 2 (direct): center=(324,139), size=(23,28)
+  Method 3 (scale/640): center=(324,139), size=(23,28)
+  Using Method 2 (direct)
+  Final bbox: (312,125,23,28)
+Coordinate debug for bottle (conf=0.719):
+  Raw: (333.750,139.375,29.812,33.219)
+  Method 1 (norm*size): center=(213600,89200), size=(19080,21260)
+  Method 2 (direct): center=(333,139), size=(29,33)
+  Method 3 (scale/640): center=(333,139), size=(29,33)
+  Using Method 2 (direct)
+  Final bbox: (318,122,29,33)
+Coordinate debug for bottle (conf=0.720):
+  Raw: (340.000,140.625,31.203,34.281)
+  Method 1 (norm*size): center=(217600,90000), size=(19970,21940)
+  Method 2 (direct): center=(340,140), size=(31,34)
+  Method 3 (scale/640): center=(340,140), size=(31,34)
+  Using Method 2 (direct)
+  Final bbox: (324,123,31,34)
+Coordinate debug for bottle (conf=0.756):
+  Raw: (347.250,141.000,28.312,34.156)
+  Method 1 (norm*size): center=(222240,90240), size=(18120,21860)
+  Method 2 (direct): center=(347,141), size=(28,34)
+  Method 3 (scale/640): center=(347,141), size=(28,34)
+  Using Method 2 (direct)
+  Final bbox: (333,124,28,34)
+Summary: 1404 total, 250 high confidence, 5 final
+Detection time: 236.3ms
+Found 5 final detections
+
+=== FRAME 240 ===
+Processing frame 640x640
+High conf detection: raw_coords=(35.156,7.148,23.391,12.172), conf=0.350
+High conf detection: raw_coords=(43.719,7.500,17.750,12.570), conf=0.418
+High conf detection: raw_coords=(52.625,7.977,18.406,13.336), conf=0.633
+Coordinate debug for person (conf=0.747):
+  Raw: (52.312,14.344,24.500,22.938)
+  Method 1 (norm*size): center=(33480,9180), size=(15680,14680)
+  Method 2 (direct): center=(52,14), size=(24,22)
+  Method 3 (scale/640): center=(52,14), size=(24,22)
+  Using Method 2 (direct)
+  Final bbox: (40,3,24,22)
+Coordinate debug for person (conf=0.707):
+  Raw: (51.750,21.391,25.281,33.438)
+  Method 1 (norm*size): center=(33120,13690), size=(16180,21400)
+  Method 2 (direct): center=(51,21), size=(25,33)
+  Method 3 (scale/640): center=(51,21), size=(25,33)
+  Using Method 2 (direct)
+  Final bbox: (38,4,25,33)
+Coordinate debug for person (conf=0.721):
+  Raw: (444.000,109.688,22.625,38.281)
+  Method 1 (norm*size): center=(284160,70200), size=(14480,24500)
+  Method 2 (direct): center=(444,109), size=(22,38)
+  Method 3 (scale/640): center=(444,109), size=(22,38)
+  Using Method 2 (direct)
+  Final bbox: (433,90,22,38)
+Coordinate debug for person (conf=0.729):
+  Raw: (451.750,109.375,23.172,38.438)
+  Method 1 (norm*size): center=(289120,70000), size=(14830,24600)
+  Method 2 (direct): center=(451,109), size=(23,38)
+  Method 3 (scale/640): center=(451,109), size=(23,38)
+  Using Method 2 (direct)
+  Final bbox: (439,90,23,38)
+Coordinate debug for person (conf=0.727):
+  Raw: (460.000,109.812,24.781,37.219)
+  Method 1 (norm*size): center=(294400,70280), size=(15860,23820)
+  Method 2 (direct): center=(460,109), size=(24,37)
+  Method 3 (scale/640): center=(460,109), size=(24,37)
+  Using Method 2 (direct)
+  Final bbox: (448,90,24,37)
+Summary: 1098 total, 222 high confidence, 5 final
+Detection time: 218.7ms
+Found 5 final detections
+
+=== FRAME 270 ===
+Processing frame 640x640
+High conf detection: raw_coords=(35.156,8.961,25.531,15.523), conf=0.375
+High conf detection: raw_coords=(45.125,8.633,22.328,15.031), conf=0.396
+High conf detection: raw_coords=(53.812,8.180,24.391,14.727), conf=0.531
+Coordinate debug for person (conf=0.733):
+  Raw: (444.750,108.875,21.141,39.062)
+  Method 1 (norm*size): center=(284640,69680), size=(13530,25000)
+  Method 2 (direct): center=(444,108), size=(21,39)
+  Method 3 (scale/640): center=(444,108), size=(21,39)
+  Using Method 2 (direct)
+  Final bbox: (433,88,21,39)
+Coordinate debug for person (conf=0.772):
+  Raw: (451.500,109.938,23.125,39.938)
+  Method 1 (norm*size): center=(288960,70360), size=(14800,25560)
+  Method 2 (direct): center=(451,109), size=(23,39)
+  Method 3 (scale/640): center=(451,109), size=(23,39)
+  Using Method 2 (direct)
+  Final bbox: (439,89,23,39)
+Coordinate debug for person (conf=0.757):
+  Raw: (459.750,109.875,24.875,38.625)
+  Method 1 (norm*size): center=(294240,70320), size=(15920,24720)
+  Method 2 (direct): center=(459,109), size=(24,38)
+  Method 3 (scale/640): center=(459,109), size=(24,38)
+  Using Method 2 (direct)
+  Final bbox: (447,90,24,38)
+Coordinate debug for person (conf=0.719):
+  Raw: (434.500,118.312,23.297,35.750)
+  Method 1 (norm*size): center=(278080,75720), size=(14910,22880)
+  Method 2 (direct): center=(434,118), size=(23,35)
+  Method 3 (scale/640): center=(434,118), size=(23,35)
+  Using Method 2 (direct)
+  Final bbox: (422,100,23,35)
+Coordinate debug for person (conf=0.779):
+  Raw: (444.250,117.812,22.125,37.094)
+  Method 1 (norm*size): center=(284320,75400), size=(14160,23740)
+  Method 2 (direct): center=(444,117), size=(22,37)
+  Method 3 (scale/640): center=(444,117), size=(22,37)
+  Using Method 2 (direct)
+  Final bbox: (433,98,22,37)
+Summary: 1176 total, 172 high confidence, 5 final
+Detection time: 221.7ms
+Found 5 final detections
+
+=== FRAME 300 ===
+Processing frame 640x640
+High conf detection: raw_coords=(411.750,3.645,24.047,7.293), conf=0.322
+High conf detection: raw_coords=(421.000,4.555,28.109,9.203), conf=0.490
+High conf detection: raw_coords=(425.500,5.281,27.078,10.039), conf=0.566
+Coordinate debug for person (conf=0.723):
+  Raw: (425.500,8.281,26.562,15.109)
+  Method 1 (norm*size): center=(272320,5300), size=(17000,9670)
+  Method 2 (direct): center=(425,8), size=(26,15)
+  Method 3 (scale/640): center=(425,8), size=(26,15)
+  Using Method 2 (direct)
+  Final bbox: (412,0,26,15)
+Coordinate debug for person (conf=0.720):
+  Raw: (531.000,12.758,28.344,23.578)
+  Method 1 (norm*size): center=(339840,8165), size=(18140,15090)
+  Method 2 (direct): center=(531,12), size=(28,23)
+  Method 3 (scale/640): center=(531,12), size=(28,23)
+  Using Method 2 (direct)
+  Final bbox: (517,0,28,23)
+Coordinate debug for person (conf=0.750):
+  Raw: (539.500,12.945,29.609,24.062)
+  Method 1 (norm*size): center=(345280,8285), size=(18950,15400)
+  Method 2 (direct): center=(539,12), size=(29,24)
+  Method 3 (scale/640): center=(539,12), size=(29,24)
+  Using Method 2 (direct)
+  Final bbox: (524,0,29,24)
+Coordinate debug for person (conf=0.736):
+  Raw: (548.000,13.891,31.172,25.703)
+  Method 1 (norm*size): center=(350720,8890), size=(19950,16450)
+  Method 2 (direct): center=(548,13), size=(31,25)
+  Method 3 (scale/640): center=(548,13), size=(31,25)
+  Using Method 2 (direct)
+  Final bbox: (532,0,31,25)
+Coordinate debug for person (conf=0.774):
+  Raw: (556.500,15.156,30.484,28.000)
+  Method 1 (norm*size): center=(356160,9700), size=(19510,17920)
+  Method 2 (direct): center=(556,15), size=(30,28)
+  Method 3 (scale/640): center=(556,15), size=(30,28)
+  Using Method 2 (direct)
+  Final bbox: (541,1,30,28)
+Summary: 150 total, 68 high confidence, 5 final
+Detection time: 166.8ms
+Found 5 final detections
+
+=== FRAME 330 ===
+Processing frame 640x640
+High conf detection: raw_coords=(224.500,5.062,13.141,9.719), conf=0.354
+High conf detection: raw_coords=(229.000,5.500,22.406,10.383), conf=0.337
+High conf detection: raw_coords=(233.000,5.164,27.359,10.078), conf=0.374
+Coordinate debug for bottle (conf=0.709):
+  Raw: (322.250,29.094,18.828,44.062)
+  Method 1 (norm*size): center=(206240,18620), size=(12050,28200)
+  Method 2 (direct): center=(322,29), size=(18,44)
+  Method 3 (scale/640): center=(322,29), size=(18,44)
+  Using Method 2 (direct)
+  Final bbox: (313,7,18,44)
+Coordinate debug for bottle (conf=0.742):
+  Raw: (322.750,34.250,15.898,40.094)
+  Method 1 (norm*size): center=(206560,21920), size=(10175,25660)
+  Method 2 (direct): center=(322,34), size=(15,40)
+  Method 3 (scale/640): center=(322,34), size=(15,40)
+  Using Method 2 (direct)
+  Final bbox: (314,14,15,40)
+Coordinate debug for person (conf=0.714):
+  Raw: (418.250,45.438,24.359,33.031)
+  Method 1 (norm*size): center=(267680,29080), size=(15590,21140)
+  Method 2 (direct): center=(418,45), size=(24,33)
+  Method 3 (scale/640): center=(418,45), size=(24,33)
+  Using Method 2 (direct)
+  Final bbox: (406,28,24,33)
+Coordinate debug for person (conf=0.706):
+  Raw: (427.500,45.719,29.000,30.828)
+  Method 1 (norm*size): center=(273600,29260), size=(18560,19730)
+  Method 2 (direct): center=(427,45), size=(29,30)
+  Method 3 (scale/640): center=(427,45), size=(29,30)
+  Using Method 2 (direct)
+  Final bbox: (412,30,29,30)
+Coordinate debug for person (conf=0.717):
+  Raw: (414.000,51.312,22.469,41.438)
+  Method 1 (norm*size): center=(264960,32840), size=(14380,26520)
+  Method 2 (direct): center=(414,51), size=(22,41)
+  Method 3 (scale/640): center=(414,51), size=(22,41)
+  Using Method 2 (direct)
+  Final bbox: (403,30,22,41)
+Summary: 532 total, 272 high confidence, 5 final
+Detection time: 186.3ms
+Found 5 final detections
+
+=== FRAME 360 ===
+Processing frame 640x640
+High conf detection: raw_coords=(224.000,5.266,16.172,10.492), conf=0.315
+High conf detection: raw_coords=(233.250,5.102,29.172,9.977), conf=0.321
+High conf detection: raw_coords=(274.500,5.164,27.984,9.609), conf=0.316
+Coordinate debug for person (conf=0.723):
+  Raw: (419.000,37.062,20.891,16.891)
+  Method 1 (norm*size): center=(268160,23720), size=(13370,10810)
+  Method 2 (direct): center=(419,37), size=(20,16)
+  Method 3 (scale/640): center=(419,37), size=(20,16)
+  Using Method 2 (direct)
+  Final bbox: (409,29,20,16)
+Coordinate debug for person (conf=0.772):
+  Raw: (414.250,45.188,18.578,31.625)
+  Method 1 (norm*size): center=(265120,28920), size=(11890,20240)
+  Method 2 (direct): center=(414,45), size=(18,31)
+  Method 3 (scale/640): center=(414,45), size=(18,31)
+  Using Method 2 (direct)
+  Final bbox: (405,29,18,31)
+Coordinate debug for person (conf=0.842):
+  Raw: (418.500,45.031,21.953,28.875)
+  Method 1 (norm*size): center=(267840,28820), size=(14050,18480)
+  Method 2 (direct): center=(418,45), size=(21,28)
+  Method 3 (scale/640): center=(418,45), size=(21,28)
+  Using Method 2 (direct)
+  Final bbox: (407,31,21,28)
+Coordinate debug for person (conf=0.834):
+  Raw: (427.250,45.969,26.125,27.188)
+  Method 1 (norm*size): center=(273440,29420), size=(16720,17400)
+  Method 2 (direct): center=(427,45), size=(26,27)
+  Method 3 (scale/640): center=(427,45), size=(26,27)
+  Using Method 2 (direct)
+  Final bbox: (414,31,26,27)
+Coordinate debug for person (conf=0.794):
+  Raw: (436.250,46.250,26.828,27.828)
+  Method 1 (norm*size): center=(279200,29600), size=(17170,17810)
+  Method 2 (direct): center=(436,46), size=(26,27)
+  Method 3 (scale/640): center=(436,46), size=(26,27)
+  Using Method 2 (direct)
+  Final bbox: (423,32,26,27)
+Summary: 455 total, 173 high confidence, 5 final
+Detection time: 186.3ms
+Found 5 final detections
+
+=== FRAME 390 ===
+Processing frame 640x640
+High conf detection: raw_coords=(225.000,5.383,14.711,10.703), conf=0.352
+High conf detection: raw_coords=(230.625,6.422,23.422,12.297), conf=0.433
+High conf detection: raw_coords=(233.000,6.508,28.469,12.414), conf=0.470
+Coordinate debug for person (conf=0.732):
+  Raw: (421.000,46.562,21.375,30.281)
+  Method 1 (norm*size): center=(269440,29800), size=(13680,19380)
+  Method 2 (direct): center=(421,46), size=(21,30)
+  Method 3 (scale/640): center=(421,46), size=(21,30)
+  Using Method 2 (direct)
+  Final bbox: (410,31,21,30)
+Coordinate debug for person (conf=0.745):
+  Raw: (427.750,47.125,24.781,27.406)
+  Method 1 (norm*size): center=(273760,30160), size=(15860,17540)
+  Method 2 (direct): center=(427,47), size=(24,27)
+  Method 3 (scale/640): center=(427,47), size=(24,27)
+  Using Method 2 (direct)
+  Final bbox: (415,33,24,27)
+Coordinate debug for person (conf=0.713):
+  Raw: (435.500,46.344,25.719,27.234)
+  Method 1 (norm*size): center=(278720,29660), size=(16460,17430)
+  Method 2 (direct): center=(435,46), size=(25,27)
+  Method 3 (scale/640): center=(435,46), size=(25,27)
+  Using Method 2 (direct)
+  Final bbox: (422,32,25,27)
+Coordinate debug for person (conf=0.759):
+  Raw: (423.000,52.344,25.781,36.156)
+  Method 1 (norm*size): center=(270720,33500), size=(16500,23140)
+  Method 2 (direct): center=(423,52), size=(25,36)
+  Method 3 (scale/640): center=(423,52), size=(25,36)
+  Using Method 2 (direct)
+  Final bbox: (410,34,25,36)
+Coordinate debug for person (conf=0.714):
+  Raw: (426.750,55.938,25.969,29.250)
+  Method 1 (norm*size): center=(273120,35800), size=(16620,18720)
+  Method 2 (direct): center=(426,55), size=(25,29)
+  Method 3 (scale/640): center=(426,55), size=(25,29)
+  Using Method 2 (direct)
+  Final bbox: (413,40,25,29)
+Summary: 534 total, 250 high confidence, 5 final
+Detection time: 205.8ms
+Found 5 final detections
+^C
+Interrupted by user
+GST_ARGUS: Cleaning up
+CONSUMER: Done Success
+GST_ARGUS: Done Success

@@ -20,13 +20,47 @@ The system now properly detects and displays bounding boxes for target objects l
 - Real-time object detection with bounding box visualization
 - Targets relevant objects for autonomous driving scenarios
 
-## Files
+## Project Structure
 
-- `vision.py` - Main vision system (original messy version)
-- `vision_clean.py` - Cleaned up version with optimizations
-- `convert_to_tensorrt.py` - Script to convert ONNX models to TensorRT engines
-- Other utility scripts for testing and configuration
-- Placeholder files for future implementation of the driving functions
+```
+autonomous-vehicle-jetson/
+├── src/
+│   ├── vision/
+│   │   └── detection.py        # Main vision system (cleaned & optimized)
+│   ├── navigation/
+│   │   └── control.py          # Vehicle control (TODO)
+│   ├── utils/
+│   │   └── config.py           # Configuration settings
+│   └── main.py                 # Main entry point
+├── scripts/
+│   ├── convert_to_tensorrt.py  # TensorRT conversion utility
+│   └── download_optimized_model.py  # Model download utility
+├── models/                     # Place TensorRT engines here
+├── docs/
+│   └── optimization_notes.md   # Detailed optimization log
+├── tests/
+│   └── vision_debug.py         # Debug/testing tools
+├── legacy/
+│   ├── vision_original.py      # Original messy version (reference)
+│   └── terminal_outputs_*.txt  # Debug session logs
+└── requirements.txt
+```
+
+## Usage
+
+Place the TensorRT engine file in the `models/` directory and run:
+
+```bash
+python src/main.py --model models/yolov5n_fp16.engine --confidence 0.5
+```
+
+## Migration Note
+
+After testing that the new structure works properly,  the old `code/` directory can be safely deleted. The important files have been reorganized:
+- `vision_clean.py` → `src/vision/detection.py` (main system)
+- `vision.py` → `legacy/vision_original.py` (reference)
+- `vision_debug.py` → `tests/vision_debug.py` (testing)
+- Empty placeholder files (`navigation.py`, `state_machine.py`, etc.) were removed
 
 ## Notes
 

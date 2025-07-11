@@ -1,0 +1,29 @@
+# Optimized Vision System Requirements for Jetson Nano
+# Install with: pip3 install -r requirements_optimized.txt
+
+# Core vision libraries
+opencv-python>=4.5.0
+numpy>=1.19.0
+
+# TensorRT inference (pre-installed on Jetson)
+# tensorrt>=8.0.0  # Usually pre-installed on JetPack
+
+# CUDA support (pre-installed on Jetson)
+# pycuda>=2021.1  # Install separately if needed
+# pycuda needed to be installed for tensorrt to work and it would only install when installed in terminal via "pip install pycuda". No other combination of pip3 or python3 or -m tags or anything else worked.
+
+# Optional monitoring tools
+jetson-stats>=4.0.0  # For system monitoring with jtop
+
+# Alternative lightweight models (optional)
+# ultralytics>=8.0.0  # For downloading newer models
+
+# For model conversion and optimization
+# torch>=1.9.0  # If you need to export custom models
+# torchvision>=0.10.0
+
+# Threading and async support (built-in)
+# No additional requirements for threading
+
+# Performance monitoring
+psutil>=5.8.0  # For system resource monitoring 
