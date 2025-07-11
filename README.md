@@ -48,7 +48,7 @@ autonomous-vehicle-jetson/
 
 ## Usage
 
-Place the TensorRT engine file in the `models/` directory and run:
+Place the TensorRT engine file in the `models/` directory and run from main.py or the following can be run in bash:
 
 ```bash
 python src/main.py --model models/yolov5n_fp16.engine --confidence 0.5
