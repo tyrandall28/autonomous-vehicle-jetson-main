@@ -148,8 +148,11 @@ class SimplifiedVisionSystem:
         print("Camera initialized successfully")
         
     def detect_objects(self, frame):
-        """Simplified object detection"""
+        """Simplified object detection with timing breakdown"""
+        start_time = time.time()
+        
         # Create blob
+        preprocessing_start = time.time()
         blob = cv2.dnn.blobFromImage(
             frame,
             scalefactor=1/255.0,
@@ -157,59 +160,36 @@ class SimplifiedVisionSystem:
             swapRB=True,
             crop=False
         )
+        preprocessing_time = (time.time() - preprocessing_start) * 1000
         
         # Run inference
+        inference_start = time.time()
         if self.use_tensorrt:
             outputs = self.inference_engine.infer(blob)
         else:
             self.net.setInput(blob)
             outputs = self.net.forward()
+        inference_time = (time.time() - inference_start) * 1000
         
-        return self._process_detections(outputs, frame.shape[:2])
+        # Process detections
+        postprocessing_start = time.time()
+        detections = self._process_detections(outputs, frame.shape[:2])
+        postprocessing_time = (time.time() - postprocessing_start) * 1000
+        
+        total_time = (time.time() - start_time) * 1000
+        
+        # Print timing breakdown occasionally
+        if hasattr(self, 'timing_counter'):
+            self.timing_counter += 1
+        else:
+            self.timing_counter = 1
+            
+        if self.timing_counter % 5 == 0:  # Print every 5th detection
+            print(f"Timing: Preprocessing={preprocessing_time:.1f}ms, Inference={inference_time:.1f}ms, Postprocessing={postprocessing_time:.1f}ms, Total={total_time:.1f}ms")
+        
+        return detections
     
-    def _custom_aggressive_nms(self, boxes, confidences, class_ids, iou_threshold=0.3):
-        """Custom aggressive NMS that merges boxes more aggressively than OpenCV"""
-        if len(boxes) == 0:
-            return []
-        
-        # Convert to numpy arrays
-        boxes = np.array(boxes)
-        confidences = np.array(confidences)
-        
-        # Sort by confidence (highest first)
-        sorted_indices = np.argsort(confidences)[::-1]
-        
-        keep = []
-        while len(sorted_indices) > 0:
-            # Take the box with highest confidence
-            current = sorted_indices[0]
-            keep.append(current)
-            
-            if len(sorted_indices) == 1:
-                break
-                
-            # Calculate IoU with remaining boxes
-            current_box = boxes[current]
-            remaining_boxes = boxes[sorted_indices[1:]]
-            
-            # Calculate intersection over union
-            x1 = np.maximum(current_box[0], remaining_boxes[:, 0])
-            y1 = np.maximum(current_box[1], remaining_boxes[:, 1])
-            x2 = np.minimum(current_box[0] + current_box[2], remaining_boxes[:, 0] + remaining_boxes[:, 2])
-            y2 = np.minimum(current_box[1] + current_box[3], remaining_boxes[:, 1] + remaining_boxes[:, 3])
-            
-            intersection = np.maximum(0, x2 - x1) * np.maximum(0, y2 - y1)
-            
-            current_area = current_box[2] * current_box[3]
-            remaining_areas = remaining_boxes[:, 2] * remaining_boxes[:, 3]
-            
-            iou = intersection / (current_area + remaining_areas - intersection)
-            
-            # Keep only boxes with IoU below threshold
-            mask = iou <= iou_threshold
-            sorted_indices = sorted_indices[1:][mask]
-        
-        return keep
+
     
     def _process_detections(self, outputs, frame_shape):
         """Simplified detection processing"""
@@ -234,6 +214,10 @@ class SimplifiedVisionSystem:
                 raw_count += 1
                 if len(detection) < 85:
                     continue
+                
+                # Early exit if we already have enough good detections
+                if len(boxes) >= 100:  # Stop processing after 100 candidate boxes
+                    break
                     
                 # Get confidence scores
                 scores = detection[5:]
@@ -290,14 +274,15 @@ class SimplifiedVisionSystem:
             if len(boxes) > 100:  # Only print when we have lots of boxes
                 print(f"NMS Input: {len(boxes)} boxes, conf_thresh={self.confidence_threshold}, nms_thresh={self.nms_threshold}")
             
-            # Use custom aggressive NMS instead of OpenCV
-            kept_indices = self._custom_aggressive_nms(boxes, confidences, class_ids, iou_threshold=0.3)
+            # Use OpenCV vectorized NMS (much faster than custom)
+            indices = cv2.dnn.NMSBoxes(boxes, confidences, self.confidence_threshold, 0.3)
             
-            if len(kept_indices) > 0:
-                # Already sorted by confidence in custom NMS
+            if len(indices) > 0:
+                # Sort by confidence since OpenCV NMS doesn't sort
+                sorted_indices = sorted(indices.flatten(), key=lambda i: confidences[i], reverse=True)
                 max_detections = 8  # Even lower limit since we have better NMS now
                 
-                for idx, i in enumerate(kept_indices):
+                for idx, i in enumerate(sorted_indices):
                     if idx >= max_detections:  # Stop after max detections
                         break
                         
@@ -351,7 +336,7 @@ class SimplifiedVisionSystem:
         frame_count = 0
         fps_counter = 0
         fps_start_time = time.time()
-        process_every_n_frames = 15  # Process every 15th frame (reduce detection frequency for stability)
+        process_every_n_frames = 8  # Process every 8th frame (faster NMS allows more frequent detection)
         last_detections = []  # Keep last detections for smoother display
         
         while True:
